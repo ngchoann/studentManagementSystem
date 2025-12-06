@@ -36,6 +36,7 @@ namespace StudentManagementSystem.Forms
             this.lblUserInfo = new System.Windows.Forms.Label();
             this.lblTitle = new System.Windows.Forms.Label();
             this.panelMenu = new System.Windows.Forms.Panel();
+            this.tlpMenu = new System.Windows.Forms.TableLayoutPanel();
             this.btnMACSystem = new System.Windows.Forms.Button();
             this.btnAuditingSystem = new System.Windows.Forms.Button();
             this.btnBackupRecovery = new System.Windows.Forms.Button();
@@ -110,137 +111,160 @@ namespace StudentManagementSystem.Forms
             // panelMenu
             // 
             this.panelMenu.BackColor = System.Drawing.SystemColors.Control;
-            this.panelMenu.Controls.Add(this.btnBackupRecovery);
-            this.panelMenu.Controls.Add(this.btnAuditingSystem);
-            this.panelMenu.Controls.Add(this.btnMACSystem);
-            this.panelMenu.Controls.Add(this.btnSystemConfig);
-            this.panelMenu.Controls.Add(this.btnQuanLyDiem);
-            this.panelMenu.Controls.Add(this.btnQuanLyHocPhan);
-            this.panelMenu.Controls.Add(this.btnQuanLyLop);
-            this.panelMenu.Controls.Add(this.btnQuanLyGiaoVien);
-            this.panelMenu.Controls.Add(this.btnQuanLySinhVien);
+            this.panelMenu.Controls.Add(this.tlpMenu);
             this.panelMenu.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelMenu.Location = new System.Drawing.Point(0, 80);
             this.panelMenu.Name = "panelMenu";
             this.panelMenu.Size = new System.Drawing.Size(250, 520);
             this.panelMenu.TabIndex = 1;
             // 
+            // tlpMenu
+            // 
+            this.tlpMenu.ColumnCount = 1;
+            this.tlpMenu.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpMenu.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpMenu.Location = new System.Drawing.Point(0, 0);
+            this.tlpMenu.Name = "tlpMenu";
+            this.tlpMenu.RowCount = 9;
+            // use fixed row heights for denser stacking (60px per button)
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.tlpMenu.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpMenu.Size = new System.Drawing.Size(250, 520);
+            this.tlpMenu.TabIndex = 0;
+            // add buttons into the table layout (top-to-bottom)
+            this.tlpMenu.Controls.Add(this.btnQuanLySinhVien, 0, 0);
+            this.tlpMenu.Controls.Add(this.btnQuanLyGiaoVien, 0, 1);
+            this.tlpMenu.Controls.Add(this.btnQuanLyHocPhan, 0, 2);
+            this.tlpMenu.Controls.Add(this.btnQuanLyDiem, 0, 3);
+            this.tlpMenu.Controls.Add(this.btnQuanLyLop, 0, 4);
+            this.tlpMenu.Controls.Add(this.btnSystemConfig, 0, 5);
+            this.tlpMenu.Controls.Add(this.btnMACSystem, 0, 6);
+            this.tlpMenu.Controls.Add(this.btnAuditingSystem, 0, 7);
+            this.tlpMenu.Controls.Add(this.btnBackupRecovery, 0, 8);
+            // 
             // btnMACSystem
             // 
             this.btnMACSystem.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnMACSystem.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnMACSystem.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnMACSystem.Location = new System.Drawing.Point(10, 320);
             this.btnMACSystem.Name = "btnMACSystem";
-            this.btnMACSystem.Size = new System.Drawing.Size(230, 40);
             this.btnMACSystem.TabIndex = 8;
             this.btnMACSystem.Text = "MAC Security System";
             this.btnMACSystem.UseVisualStyleBackColor = true;
             this.btnMACSystem.Click += new System.EventHandler(this.btnMACSystem_Click);
+            this.btnMACSystem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnMACSystem.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnAuditingSystem
             // 
             this.btnAuditingSystem.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnAuditingSystem.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnAuditingSystem.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnAuditingSystem.Location = new System.Drawing.Point(10, 370);
             this.btnAuditingSystem.Name = "btnAuditingSystem";
-            this.btnAuditingSystem.Size = new System.Drawing.Size(230, 40);
             this.btnAuditingSystem.TabIndex = 7;
             this.btnAuditingSystem.Text = "Auditing & Logging";
             this.btnAuditingSystem.UseVisualStyleBackColor = true;
             this.btnAuditingSystem.Click += new System.EventHandler(this.btnAuditingSystem_Click);
+            this.btnAuditingSystem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnAuditingSystem.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnBackupRecovery
             // 
             this.btnBackupRecovery.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnBackupRecovery.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnBackupRecovery.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnBackupRecovery.Location = new System.Drawing.Point(10, 420);
             this.btnBackupRecovery.Name = "btnBackupRecovery";
-            this.btnBackupRecovery.Size = new System.Drawing.Size(230, 40);
             this.btnBackupRecovery.TabIndex = 6;
             this.btnBackupRecovery.Text = "Backup & Recovery";
             this.btnBackupRecovery.UseVisualStyleBackColor = true;
             this.btnBackupRecovery.Click += new System.EventHandler(this.btnBackupRecovery_Click);
+            this.btnBackupRecovery.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnBackupRecovery.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnSystemConfig
             // 
             this.btnSystemConfig.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnSystemConfig.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnSystemConfig.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnSystemConfig.Location = new System.Drawing.Point(10, 270);
             this.btnSystemConfig.Name = "btnSystemConfig";
-            this.btnSystemConfig.Size = new System.Drawing.Size(230, 40);
             this.btnSystemConfig.TabIndex = 5;
             this.btnSystemConfig.Text = "Quan ly Profile";
             this.btnSystemConfig.UseVisualStyleBackColor = true;
             this.btnSystemConfig.Click += new System.EventHandler(this.btnSystemConfig_Click);
+            this.btnSystemConfig.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnSystemConfig.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnQuanLyDiem
             // 
             this.btnQuanLyDiem.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnQuanLyDiem.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnQuanLyDiem.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnQuanLyDiem.Location = new System.Drawing.Point(10, 170);
             this.btnQuanLyDiem.Name = "btnQuanLyDiem";
-            this.btnQuanLyDiem.Size = new System.Drawing.Size(230, 40);
             this.btnQuanLyDiem.TabIndex = 4;
             this.btnQuanLyDiem.Text = "Quan ly Diem";
             this.btnQuanLyDiem.UseVisualStyleBackColor = true;
             this.btnQuanLyDiem.Click += new System.EventHandler(this.btnQuanLyDiem_Click);
+            this.btnQuanLyDiem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnQuanLyDiem.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnQuanLyHocPhan
             // 
             this.btnQuanLyHocPhan.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnQuanLyHocPhan.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnQuanLyHocPhan.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnQuanLyHocPhan.Location = new System.Drawing.Point(10, 120);
             this.btnQuanLyHocPhan.Name = "btnQuanLyHocPhan";
-            this.btnQuanLyHocPhan.Size = new System.Drawing.Size(230, 40);
             this.btnQuanLyHocPhan.TabIndex = 3;
             this.btnQuanLyHocPhan.Text = "Quan ly Hoc phan";
             this.btnQuanLyHocPhan.UseVisualStyleBackColor = true;
             this.btnQuanLyHocPhan.Click += new System.EventHandler(this.btnQuanLyHocPhan_Click);
+            this.btnQuanLyHocPhan.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnQuanLyHocPhan.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnQuanLyLop
             // 
             this.btnQuanLyLop.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnQuanLyLop.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnQuanLyLop.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnQuanLyLop.Location = new System.Drawing.Point(10, 220);
             this.btnQuanLyLop.Name = "btnQuanLyLop";
-            this.btnQuanLyLop.Size = new System.Drawing.Size(230, 40);
             this.btnQuanLyLop.TabIndex = 2;
             this.btnQuanLyLop.Text = "Quan ly Lop";
             this.btnQuanLyLop.UseVisualStyleBackColor = true;
             this.btnQuanLyLop.Click += new System.EventHandler(this.btnQuanLyLop_Click);
+            this.btnQuanLyLop.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnQuanLyLop.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnQuanLyGiaoVien
             // 
             this.btnQuanLyGiaoVien.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnQuanLyGiaoVien.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnQuanLyGiaoVien.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnQuanLyGiaoVien.Location = new System.Drawing.Point(10, 70);
             this.btnQuanLyGiaoVien.Name = "btnQuanLyGiaoVien";
-            this.btnQuanLyGiaoVien.Size = new System.Drawing.Size(230, 40);
             this.btnQuanLyGiaoVien.TabIndex = 1;
             this.btnQuanLyGiaoVien.Text = "Quan ly Giao vien";
             this.btnQuanLyGiaoVien.UseVisualStyleBackColor = true;
             this.btnQuanLyGiaoVien.Click += new System.EventHandler(this.btnQuanLyGiaoVien_Click);
+            this.btnQuanLyGiaoVien.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnQuanLyGiaoVien.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // btnQuanLySinhVien
             // 
             this.btnQuanLySinhVien.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
             this.btnQuanLySinhVien.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.btnQuanLySinhVien.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.btnQuanLySinhVien.Location = new System.Drawing.Point(10, 20);
             this.btnQuanLySinhVien.Name = "btnQuanLySinhVien";
-            this.btnQuanLySinhVien.Size = new System.Drawing.Size(230, 40);
             this.btnQuanLySinhVien.TabIndex = 0;
             this.btnQuanLySinhVien.Text = "Quan ly Sinh vien";
             this.btnQuanLySinhVien.UseVisualStyleBackColor = true;
             this.btnQuanLySinhVien.Click += new System.EventHandler(this.btnQuanLySinhVien_Click);
+            this.btnQuanLySinhVien.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnQuanLySinhVien.Margin = new System.Windows.Forms.Padding(6, 6, 6, 6);
             // 
             // panelStats
             // 
@@ -347,6 +371,7 @@ namespace StudentManagementSystem.Forms
         private System.Windows.Forms.Label lblUserInfo;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Panel panelMenu;
+        private System.Windows.Forms.TableLayoutPanel tlpMenu;
         private System.Windows.Forms.Button btnSystemConfig;
         private System.Windows.Forms.Button btnQuanLyDiem;
         private System.Windows.Forms.Button btnQuanLyHocPhan;

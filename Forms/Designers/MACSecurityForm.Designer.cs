@@ -99,6 +99,7 @@ namespace StudentManagementSystem.Forms
             dgvUserClearances.ReadOnly = true;
             dgvUserClearances.AllowUserToAddRows = false;
             dgvUserClearances.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dgvUserClearances.CellClick += DgvUserClearances_CellClick;
 
             panel.Controls.Add(dgvUserClearances);
             panel.Controls.Add(controlsPanel);

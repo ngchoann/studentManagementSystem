@@ -25,6 +25,7 @@ namespace StudentManagementSystem.Forms
             this.menuLop = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHocPhan = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDiem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuDangKyHP = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblUser = new System.Windows.Forms.ToolStripStatusLabel();
@@ -73,7 +74,8 @@ namespace StudentManagementSystem.Forms
             this.menuGiaoVien,
             this.menuLop,
             this.menuHocPhan,
-            this.menuDiem});
+            this.menuDiem,
+            this.menuDangKyHP});
             this.menuQuanLy.Name = "menuQuanLy";
             this.menuQuanLy.Size = new System.Drawing.Size(60, 20);
             this.menuQuanLy.Text = "Quản lý";
@@ -112,6 +114,14 @@ namespace StudentManagementSystem.Forms
             this.menuDiem.Size = new System.Drawing.Size(180, 22);
             this.menuDiem.Text = "Điểm";
             this.menuDiem.Click += new System.EventHandler(this.menuDiem_Click);
+            // 
+            // menuDangKyHP
+            // 
+            this.menuDangKyHP.Name = "menuDangKyHP";
+            this.menuDangKyHP.Size = new System.Drawing.Size(180, 22);
+            this.menuDangKyHP.Text = "📋 Đăng ký học phần";
+            this.menuDangKyHP.Visible = false;
+            this.menuDangKyHP.Click += new System.EventHandler(this.menuDangKyHP_Click);
             // 
             // statusStrip
             // 
@@ -176,6 +186,7 @@ namespace StudentManagementSystem.Forms
         private System.Windows.Forms.ToolStripMenuItem menuLop;
         private System.Windows.Forms.ToolStripMenuItem menuHocPhan;
         private System.Windows.Forms.ToolStripMenuItem menuDiem;
+        private System.Windows.Forms.ToolStripMenuItem menuDangKyHP;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
         private System.Windows.Forms.ToolStripStatusLabel lblUser;

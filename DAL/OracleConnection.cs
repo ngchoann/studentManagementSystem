@@ -37,15 +37,33 @@ namespace StudentManagementSystem.DAL
         {
             try
             {
-                using var cmd = new OracleCommand(
-                    "SELECT GRANTED_ROLE FROM USER_ROLE_PRIVS WHERE GRANTED_ROLE IN ('ROLE_ADMIN','ROLE_GIAOVIEN','ROLE_SINHVIEN')", conn);
-                var r = cmd.ExecuteScalar()?.ToString() ?? "";
-                if (r.Contains("ADMIN")) return "ADMIN";
-                if (r.Contains("GIAOVIEN")) return "GIAOVIEN";
-                if (r.Contains("SINHVIEN")) return "SINHVIEN";
+                // Kiểm tra trong bảng USERS trước
+                using var cmdUsers = new OracleCommand(
+                    "SELECT ROLE FROM ADMIN_MASTER.USERS WHERE UPPER(USERNAME) = UPPER(:u)", conn);
+                cmdUsers.Parameters.Add(":u", user);
+                var roleFromUsers = cmdUsers.ExecuteScalar()?.ToString() ?? "";
+                if (!string.IsNullOrEmpty(roleFromUsers))
+                {
+                    if (roleFromUsers.Contains("ADMIN")) return "ADMIN";
+                    if (roleFromUsers.Contains("TEACHER") || roleFromUsers.Contains("GIAOVIEN")) return "GIAOVIEN";
+                    if (roleFromUsers.Contains("STUDENT") || roleFromUsers.Contains("SINHVIEN")) return "SINHVIEN";
+                }
+                
+                // Fallback: kiểm tra trong bảng GIAOVIEN hoặc SINHVIEN
+                using var cmdGV = new OracleCommand(
+                    "SELECT COUNT(*) FROM ADMIN_MASTER.GIAOVIEN WHERE UPPER(ORACLEUSERNAME) = UPPER(:u)", conn);
+                cmdGV.Parameters.Add(":u", user);
+                if (Convert.ToInt32(cmdGV.ExecuteScalar()) > 0) return "GIAOVIEN";
+                
+                using var cmdSV = new OracleCommand(
+                    "SELECT COUNT(*) FROM ADMIN_MASTER.SINHVIEN WHERE UPPER(ORACLEUSERNAME) = UPPER(:u)", conn);
+                cmdSV.Parameters.Add(":u", user);
+                if (Convert.ToInt32(cmdSV.ExecuteScalar()) > 0) return "SINHVIEN";
             }
             catch { }
-            return user.StartsWith("ADMIN", StringComparison.OrdinalIgnoreCase) ? "ADMIN" :
+            
+            // Fallback cuối: dựa vào username
+            return user.Equals("ADMIN_MASTER", StringComparison.OrdinalIgnoreCase) ? "ADMIN" :
                    user.StartsWith("GV", StringComparison.OrdinalIgnoreCase) ? "GIAOVIEN" :
                    user.StartsWith("SV", StringComparison.OrdinalIgnoreCase) ? "SINHVIEN" : "UNKNOWN";
         }

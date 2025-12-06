@@ -8,10 +8,21 @@ namespace StudentManagementSystem.DAL
 {
     public abstract class BaseRepository
     {
-        protected const string ConnectionString = "User Id=ADMIN_MASTER;Password=123;Data Source=localhost:1521/orcl21pdb1;";
+        // Connection string mặc định (ADMIN) - dùng cho tác vụ admin
+        protected const string AdminConnectionString = "User Id=ADMIN_MASTER;Password=123;Data Source=localhost:1521/orcl21pdb1;";
         protected static readonly AuditService Audit = new();
 
+        // Lấy connection string của user hiện tại (cho MAC policy)
+        protected static string ConnectionString => 
+            !string.IsNullOrEmpty(OracleConnection.Instance.ConnectionString) 
+                ? OracleConnection.Instance.ConnectionString 
+                : AdminConnectionString;
+
+        // Connection cho user hiện tại (áp dụng MAC)
         protected static OraConn Conn() => new(ConnectionString);
+        
+        // Connection admin (bypass MAC, dùng cho tạo user, insert...)
+        protected static OraConn AdminConn() => new(AdminConnectionString);
 
         protected static void Log(string user, string action, string table, string comment)
         { try { Audit.LogApplicationEvent(user, action, table, comment); } catch { } }
@@ -68,6 +79,13 @@ namespace StudentManagementSystem.DAL
         protected static bool ExecWithConn(Action<OraConn> action)
         {
             try { using var conn = Conn(); conn.Open(); action(conn); return true; }
+            catch (Exception ex) { Err("Lỗi thực thi", ex); return false; }
+        }
+
+        // Thực thi với quyền Admin (bypass MAC)
+        protected static bool ExecWithAdminConn(Action<OraConn> action)
+        {
+            try { using var conn = AdminConn(); conn.Open(); action(conn); return true; }
             catch (Exception ex) { Err("Lỗi thực thi", ex); return false; }
         }
 

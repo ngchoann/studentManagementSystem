@@ -37,8 +37,13 @@ namespace StudentManagementSystem.Forms
                     return;
                 }
 
-                // Thiết lập kết nối cho DAL để các form khác sử dụng
-                DAL.OracleConnection.Instance.Connect("ADMIN_MASTER", "123", "localhost:1521/orcl21pdb1");
+                // Kết nối bằng tài khoản Oracle của user (để MAC policy hoạt động)
+                if (!DAL.OracleConnection.Instance.Connect(username, password, "localhost:1521/orcl21pdb1"))
+                {
+                    lblMessage.ForeColor = System.Drawing.Color.Red;
+                    lblMessage.Text = "Không thể kết nối với tài khoản Oracle";
+                    return;
+                }
 
                 lblMessage.ForeColor = System.Drawing.Color.Green;
                 _auditService.LogApplicationEvent(username, "APP_LOGIN", "LoginForm", $"Login OK: {role}");

@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using Oracle.ManagedDataAccess.Client;
 using StudentManagementSystem.Models;
+using StudentManagementSystem.Services;
+using StudentManagementSystem.Utilities;
 
 namespace StudentManagementSystem.DAL
 {
     public class SinhVienRepository : BaseRepository
     {
+        private readonly OracleEncryptionService _encryptionService = new();
+
         private static SinhVien Map(OracleDataReader r) => new()
         {
             MaSV = S(r["MaSV"]), HoTen = S(r["HoTen"]), NgaySinh = D(r["NgaySinh"]), GioiTinh = S(r["GioiTinh"]),
@@ -21,11 +25,24 @@ namespace StudentManagementSystem.DAL
         {
             try
             {
-                using var conn = Conn(); conn.Open();
+                using var conn = AdminConn(); conn.Open();
+                
+                // 1. Kiểm tra username đã tồn tại trong bảng USERS chưa
+                using (var checkCmd = new OracleCommand("SELECT COUNT(*) FROM ADMIN_MASTER.USERS WHERE USERNAME = :u", conn))
+                {
+                    checkCmd.Parameters.Add(":u", user.ToUpper());
+                    var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    if (count > 0)
+                        throw new Exception($"Username '{user}' đã tồn tại! Vui lòng chọn username khác.");
+                }
+                
                 Compile(conn, "ADMIN_MASTER.TRG_AUDIT_SINHVIEN");
+                
+                // 2. Tạo Oracle user
                 CreateOracleUser(conn, user, pwd, "TS_SINHVIEN", "PROFILE_SINHVIEN", "ROLE_SINHVIEN");
                 Log(performedBy, "INSERT", "SINHVIEN", $"Inserted: {s.HoTen}, User={user}");
 
+                // 3. Insert vào bảng SINHVIEN
                 var sql = @"INSERT INTO ADMIN_MASTER.SinhVien(HoTen,NgaySinh,GioiTinh,Email,SoDienThoai,DiaChi,MaLop,NgayNhapHoc,TrangThai,OracleUsername)
                     VALUES(:a,:b,:c,:d,:e,:f,:g,:h,:i,:j)";
                 using var cmd = new OracleCommand(sql, conn);
@@ -40,8 +57,24 @@ namespace StudentManagementSystem.DAL
                     cmd.ExecuteNonQuery();
                 }
 
-                InsertUsers(conn, user, pwd, "STUDENT");
-                Ok($"Thêm sinh viên thành công!\nUsername: {user}\nPassword: {pwd}");
+                // 4. Tạo RSA keys và lưu vào bảng USERS
+                var (success, userId, privateKey, error) = _encryptionService.CreateNewUserWithKeys(user, pwd, "STUDENT");
+                
+                if (success && !string.IsNullOrEmpty(privateKey))
+                {
+                    // 5. Lưu private key vào file
+                    var fileName = FileHelper.GeneratePrivateKeyFileName(user, "STUDENT");
+                    var keyPath = FileHelper.WritePrivateKeyFile(privateKey, fileName);
+                    
+                    Ok($"Thêm sinh viên thành công!\n\nUsername: {user}\nPassword: {pwd}\n\nPrivate Key đã được lưu tại:\n{keyPath}\n\nSinh viên cần upload file này khi đăng nhập!");
+                }
+                else
+                {
+                    // Fallback: Nếu không tạo được RSA, vẫn insert vào USERS bình thường
+                    InsertUsers(conn, user, pwd, "STUDENT");
+                    Ok($"Thêm sinh viên thành công!\n\nUsername: {user}\nPassword: {pwd}\n\n(Lưu ý: Không tạo được RSA key - {error})");
+                }
+                
                 return true;
             }
             catch (OracleException ox) when (ox.Number == 4098)
@@ -67,7 +100,7 @@ namespace StudentManagementSystem.DAL
         public bool Delete(string id, string performedBy = "")
         {
             Log(string.IsNullOrEmpty(performedBy) ? Environment.UserName : performedBy, "DELETE", "SINHVIEN", $"Deleted: {id}");
-            return ExecWithConn(conn =>
+            return ExecWithAdminConn(conn =>
             {
                 using (var cmd = new OracleCommand("DELETE FROM SINHVIEN WHERE MASV=:a", conn))
                 { cmd.Parameters.Add(":a", id); cmd.ExecuteNonQuery(); }

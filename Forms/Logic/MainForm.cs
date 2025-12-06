@@ -20,6 +20,9 @@ namespace StudentManagementSystem.Forms
 
         private void SetPermissionsByRole(string role)
         {
+            // Ẩn tất cả menu đăng ký học phần trước
+            menuDangKyHP.Visible = false;
+            
             switch (role)
             {
                 case "ADMIN":
@@ -30,8 +33,9 @@ namespace StudentManagementSystem.Forms
                     menuGiaoVien.Enabled = false;
                     break;
                 case "SINHVIEN":
-                    menuLop.Enabled = menuHocPhan.Enabled = menuDiem.Enabled = true;
-                    menuSinhVien.Enabled = menuGiaoVien.Enabled = false;
+                    menuLop.Enabled = menuHocPhan.Enabled = true;
+                    menuSinhVien.Enabled = menuGiaoVien.Enabled = menuDiem.Enabled = false;
+                    menuDangKyHP.Visible = true; // Sinh viên thấy menu đăng ký HP
                     break;
                 default:
                     menuQuanLy.Enabled = false;
@@ -44,6 +48,7 @@ namespace StudentManagementSystem.Forms
         private void menuLop_Click(object sender, EventArgs e) => OpenChildForm(new LopForm());
         private void menuHocPhan_Click(object sender, EventArgs e) => OpenChildForm(new HocPhanForm());
         private void menuDiem_Click(object sender, EventArgs e) => OpenChildForm(new DiemForm());
+        private void menuDangKyHP_Click(object sender, EventArgs e) => OpenChildForm(new DangKyHocPhanForm());
 
         private void OpenChildForm(Form childForm)
         {

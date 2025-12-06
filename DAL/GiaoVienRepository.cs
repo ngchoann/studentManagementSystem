@@ -1,11 +1,15 @@
 using System.Collections.Generic;
 using Oracle.ManagedDataAccess.Client;
 using StudentManagementSystem.Models;
+using StudentManagementSystem.Services;
+using StudentManagementSystem.Utilities;
 
 namespace StudentManagementSystem.DAL
 {
     public class GiaoVienRepository : BaseRepository
     {
+        private readonly OracleEncryptionService _encryptionService = new();
+
         public List<GiaoVien> GetAll() => Query("SELECT * FROM GIAOVIEN ORDER BY MAGV", r => new GiaoVien
         {
             MaGV = S(r["MaGV"]), HoTen = S(r["HoTen"]), NgaySinh = D(r["NgaySinh"]),
@@ -15,11 +19,22 @@ namespace StudentManagementSystem.DAL
 
         public bool Insert(GiaoVien g, string user, string pwd)
         {
-            return ExecWithConn(conn =>
+            return ExecWithAdminConn(conn =>
             {
+                // 1. Kiểm tra username đã tồn tại trong bảng USERS chưa
+                using (var checkCmd = new OracleCommand("SELECT COUNT(*) FROM ADMIN_MASTER.USERS WHERE USERNAME = :u", conn))
+                {
+                    checkCmd.Parameters.Add(":u", user.ToUpper());
+                    var count = Convert.ToInt32(checkCmd.ExecuteScalar());
+                    if (count > 0)
+                        throw new System.Exception($"Username '{user}' đã tồn tại! Vui lòng chọn username khác.");
+                }
+
+                // 2. Tạo Oracle user
                 CreateOracleUser(conn, user, pwd, "TS_GIAOVIEN", "PROFILE_GIAOVIEN", "ROLE_GIAOVIEN");
                 Log(user, "INSERT", "GIAOVIEN", $"Inserted: {g.HoTen}");
 
+                // 3. Insert vào bảng GIAOVIEN
                 var sql = @"INSERT INTO ADMIN_MASTER.GiaoVien(HoTen,NgaySinh,GioiTinh,Email,SoDienThoai,DiaChi,ChuyenMon,NgayVaoLam,TrangThai,OracleUsername)
                     VALUES(:a,:b,:c,:d,:e,:f,:g,:h,:i,:j)";
                 using var cmd = new OracleCommand(sql, conn);
@@ -29,8 +44,23 @@ namespace StudentManagementSystem.DAL
                 cmd.Parameters.Add(":j", user);
                 cmd.ExecuteNonQuery();
 
-                InsertUsers(conn, user, pwd, "TEACHER");
-                Ok($"Thêm giáo viên thành công!\nUsername: {user}\nPassword: {pwd}");
+                // 4. Tạo RSA keys và lưu vào bảng USERS
+                var (success, userId, privateKey, error) = _encryptionService.CreateNewUserWithKeys(user, pwd, "TEACHER");
+                
+                if (success && !string.IsNullOrEmpty(privateKey))
+                {
+                    // 5. Lưu private key vào file
+                    var fileName = FileHelper.GeneratePrivateKeyFileName(user, "TEACHER");
+                    var keyPath = FileHelper.WritePrivateKeyFile(privateKey, fileName);
+                    
+                    Ok($"Thêm giáo viên thành công!\n\nUsername: {user}\nPassword: {pwd}\n\nPrivate Key đã được lưu tại:\n{keyPath}\n\nGiáo viên cần upload file này khi đăng nhập!");
+                }
+                else
+                {
+                    // Fallback: Nếu không tạo được RSA, vẫn insert vào USERS bình thường
+                    InsertUsers(conn, user, pwd, "TEACHER");
+                    Ok($"Thêm giáo viên thành công!\n\nUsername: {user}\nPassword: {pwd}\n\n(Lưu ý: Không tạo được RSA key - {error})");
+                }
             });
         }
 

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup />
+  <ItemGroup>
+    <Compile Update="Forms\BackupRecoveryForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\AuditingSystemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\CreateUserForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\DangKyHocPhanForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\DashboardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\DiemForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\FileUploadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\GiaoVienForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\HocPhanDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\HocPhanForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\LopForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\MACSecurityForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\MainDashboard.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\SinhVienForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\StudentPersonalInfoForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\SystemConfigForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\UploadKeyForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\Logic\ViewClassesForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+</Project>

@@ -31,16 +31,30 @@ namespace StudentManagementSystem.Services
             try
             {
                 using var c = new OracleConnection(Conn); c.Open();
-                using var cmd = new OracleCommand("BEGIN CREATE_USER_WITH_RSA_KEYS(:u,:p,:r,:pk,:res); END;", c);
+                // Procedure: CREATE_USER_WITH_RSA_KEYS(p_username, p_password, p_role, p_private_key OUT, p_result OUT)
+                using var cmd = new OracleCommand("BEGIN ADMIN_MASTER.CREATE_USER_WITH_RSA_KEYS(:u,:p,:r,:pk,:res); END;", c);
                 cmd.Parameters.Add(":u", OracleDbType.Varchar2).Value = user;
                 cmd.Parameters.Add(":p", OracleDbType.Varchar2).Value = pwd;
                 cmd.Parameters.Add(":r", OracleDbType.Varchar2).Value = role;
-                var uid = new OracleParameter(":uid", OracleDbType.Int32) { Direction = ParameterDirection.Output };
                 var pk = new OracleParameter(":pk", OracleDbType.Clob) { Direction = ParameterDirection.Output };
                 var res = new OracleParameter(":res", OracleDbType.Varchar2, 500) { Direction = ParameterDirection.Output };
-                cmd.Parameters.Add(uid); cmd.Parameters.Add(pk); cmd.Parameters.Add(res);
+                cmd.Parameters.Add(pk); cmd.Parameters.Add(res);
                 cmd.ExecuteNonQuery();
-                return res.Value?.ToString() == "SUCCESS" ? (true, Convert.ToInt32(uid.Value), pk.Value?.ToString() ?? "", "") : (false, 0, "", res.Value?.ToString() ?? "");
+                
+                var result = res.Value?.ToString() ?? "";
+                if (result.StartsWith("SUCCESS|"))
+                {
+                    var userId = int.Parse(result.Split('|')[1]);
+                    // Đọc CLOB đúng cách
+                    var privateKey = "";
+                    if (pk.Value != null && pk.Value != DBNull.Value)
+                    {
+                        var clob = (Oracle.ManagedDataAccess.Types.OracleClob)pk.Value;
+                        privateKey = clob.Value;
+                    }
+                    return (true, userId, privateKey, "");
+                }
+                return (false, 0, "", result);
             }
             catch (Exception ex) { return (false, 0, "", $"Lỗi: {ex.Message}"); }
         }

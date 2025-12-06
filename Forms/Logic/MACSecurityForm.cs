@@ -55,14 +55,8 @@ namespace StudentManagementSystem.Forms
         private void LoadSecurityLevels()
         {
             cmbSecurityLevels.Items.Clear();
-            try
-            {
-                using var cmd = new OracleCommand("SELECT level_name FROM mac_security_levels ORDER BY level_value", connection);
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                    cmbSecurityLevels.Items.Add(reader["LEVEL_NAME"].ToString());
-            }
-            catch { cmbSecurityLevels.Items.AddRange(new[] { "PUBLIC", "CONFIDENTIAL", "SECRET", "TOP_SECRET" }); }
+            // 4 levels: HIGH > MEDIUM > LOW > DEFAULT
+            cmbSecurityLevels.Items.AddRange(new[] { "HIGH", "MEDIUM", "LOW", "DEFAULT" });
             
             if (cmbSecurityLevels.Items.Count > 0) cmbSecurityLevels.SelectedIndex = 0;
         }
@@ -96,7 +90,7 @@ namespace StudentManagementSystem.Forms
         {
             try
             {
-                string sql = "SELECT username, security_level, granted_by, granted_date, is_active FROM user_security_clearances ORDER BY username";
+                string sql = "SELECT username, security_level, security_value, is_active, created_date FROM user_security_clearances ORDER BY security_value DESC";
                 var adapter = new OracleDataAdapter(sql, connection);
                 var dt = new DataTable();
                 adapter.Fill(dt);
@@ -158,32 +152,60 @@ namespace StudentManagementSystem.Forms
             }
         }
 
+        private void DgvUserClearances_CellClick(object? sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            var row = dgvUserClearances.Rows[e.RowIndex];
+            var username = row.Cells["USERNAME"].Value?.ToString() ?? "";
+            var secLevel = row.Cells["SECURITY_LEVEL"].Value?.ToString() ?? "";
+            
+            // Chọn user trong combo
+            if (cmbUsers.Items.Contains(username))
+                cmbUsers.SelectedItem = username;
+            else
+            {
+                cmbUsers.Items.Add(username);
+                cmbUsers.SelectedItem = username;
+            }
+            
+            // Chọn security level
+            if (cmbSecurityLevels.Items.Contains(secLevel))
+                cmbSecurityLevels.SelectedItem = secLevel;
+                
+            lblStatus.Text = $"Selected: {username} - {secLevel}";
+        }
+
         private void BtnSetClearance_Click(object? sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(cmbUsers.Text) || cmbSecurityLevels.SelectedItem == null)
+            if (string.IsNullOrEmpty(cmbUsers.Text) || cmbUsers.Text.StartsWith("--") || cmbSecurityLevels.SelectedItem == null)
             {
-                MessageBox.Show("Please select both user and security level.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Vui lòng chọn user và security level.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            if (MessageBox.Show($"Set security clearance for '{cmbUsers.Text}' to '{cmbSecurityLevels.SelectedItem}'?",
-                "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            string username = cmbUsers.Text.ToUpper();
+            string level = cmbSecurityLevels.SelectedItem.ToString() ?? "DEFAULT";
+
+            if (MessageBox.Show($"Đặt security level cho '{username}' thành '{level}'?",
+                "Xác nhận", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {
-                    using var cmd = new OracleCommand("BEGIN ADMIN_MASTER.pkg_mac_security.set_user_security_level(:username, :level, 'ADMIN_MASTER'); END;", connection);
-                    cmd.Parameters.Add("username", OracleDbType.Varchar2).Value = cmbUsers.Text;
-                    cmd.Parameters.Add("level", OracleDbType.Varchar2).Value = cmbSecurityLevels.SelectedItem.ToString();
+                    // Gọi procedure để set level
+                    string sql = @"BEGIN ADMIN_MASTER.PKG_MAC_SECURITY.SET_USER_LEVEL(:u, :l); END;";
+                    
+                    using var cmd = new OracleCommand(sql, connection);
+                    cmd.Parameters.Add(":u", OracleDbType.Varchar2).Value = username;
+                    cmd.Parameters.Add(":l", OracleDbType.Varchar2).Value = level;
                     cmd.ExecuteNonQuery();
 
-                    MessageBox.Show("Security clearance set successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Cập nhật thành công!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LoadUserClearances();
-                    LoadAuditLog();
-                    lblStatus.Text = $"Clearance set for {cmbUsers.Text}";
+                    lblStatus.Text = $"Đã cập nhật {username} = {level}";
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show($"Lỗi: {ex.Message}", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
